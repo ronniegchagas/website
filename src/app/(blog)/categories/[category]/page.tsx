@@ -1,37 +1,25 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Container } from "@/components/layout/container";
+import { ListPosts } from "@/components/list-posts";
+import { Heading } from "@/components/ui/typography";
 import { getAllPosts, getAllPostsByCategory } from "@/lib/api";
-import { formatDate, stringToArray } from "@/lib/utils";
+import { stringToArray } from "@/lib/utils";
 
 export default async function Categories(props: Params) {
   const params = await props.params;
   const allPosts = getAllPostsByCategory(params.category);
 
   return (
-    <div className="container max-w-screen-md mx-auto space-y-3">
-      <h2 className="text-2xl font-semibold border-b py-1 mt-3">
-        Posts by Category: <span className="capitalize">{params.category}</span>
-      </h2>
-      {allPosts.map((post) => (
-        <Link key={post.date} className="px-3" href={`/posts/${post.slug}`}>
-          <div className="border bg-primary/70 p-3 rounded hover:scale-[1.01] hover:bg-primary/90 space-y-3 transition-all ease-in-out duration-300">
-            <h2 className="text-xl font-semibold">{post.title}</h2>
-            <p>{post.excerpt}</p>
-            <div>{formatDate(post.date)}</div>
-            <div>
-              <span>Tags:</span>
-              {post.tags.split(",").map((tag) => (
-                <span key={tag.trim()} className="ml-3">
-                  #{tag.trim()}
-                </span>
-              ))}
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
+    <Container css="container mx-auto space-y-3 p-3">
+      <Heading size="h2" variant="border" asChild>
+        <h2>
+          Category: <span className="capitalize">{params.category}</span>
+        </h2>
+      </Heading>
+      <ListPosts posts={allPosts} />
+    </Container>
   );
 }
 
@@ -49,7 +37,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     return notFound();
   }
 
-  const title = `Category: ${params.category} | Ronnie Garcia`;
+  const title = `Category: ${params.category} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
   const description = `Posts in the category ${params.category}`;
 
   return {

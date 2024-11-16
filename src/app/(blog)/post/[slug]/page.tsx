@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { Container } from "@/components/layout/container";
 import { PostBody } from "@/components/post-body";
 import { Tags } from "@/components/tags";
-
+import { Heading } from "@/components/ui/typography";
 import { getAllPosts, getPostBySlug } from "@/lib/api";
 import { markdownToHtml } from "@/lib/markdownToHtml";
 import { formatDate } from "@/lib/utils";
@@ -19,16 +20,18 @@ export default async function Post(props: Params) {
   const content = await markdownToHtml(post.content || "");
 
   return (
-    <div className="container max-w-screen-md mx-auto">
-      <article className="my-10">
+    <Container css="container px-3 mx-auto">
+      <article className="md:my-10 my-5">
         <div className="text-center border-b pb-3">
-          <h3 className="text-xl font-semibold uppercase">{post.title}</h3>
+          <Heading className="uppercase" size="h3" asChild>
+            <h3>{post.title}</h3>
+          </Heading>
           {formatDate(post.date)}
         </div>
         <PostBody content={content} />
         <Tags tags={post.tags} />
       </article>
-    </div>
+    </Container>
   );
 }
 
@@ -46,7 +49,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
     return notFound();
   }
 
-  const title = `${post.title} | Ronnie Garcia`;
+  const title = `${post.title} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
 
   return {
     title,

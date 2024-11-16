@@ -4,9 +4,8 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 export const metadata: Metadata = {
-  title: "Ronnie Garcia | Software Developer",
-  description:
-    "Fullstack JavaScript developer and Elixir enthusiast from Brazil",
+  title: `${process.env.NEXT_PUBLIC_SITE_NAME} | ${process.env.NEXT_PUBLIC_SITE_SUB_TITLE}`,
+  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
 };
 
 export default function RootLayout({

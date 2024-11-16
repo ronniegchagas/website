@@ -1,46 +1,60 @@
 "use client";
 
+import { Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { Undo2 } from "lucide-react";
+
+import { Container } from "./container";
+import { Customize } from "./drawer";
+import { SwitchTheme } from "./switch-theme";
 
 export const Header = () => {
   const pathname = usePathname();
+
   return (
-    <header
-      className={cn(
-        "py-4 border-b px-3 bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border sticky top-0",
-        pathname === "/" && "text-center"
-      )}
-    >
-      <div
-        className={cn(
-          pathname === "/" && "justify-center",
-          "container max-w-screen-md mx-auto flex items-center"
-        )}
-      >
-        <div>
+    <header className="py-4 border-b bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border sticky top-0 z-50">
+      <Container css="container px-3 mx-auto flex items-center justify-between">
+        {pathname === "/" && <div className="mr-auto max-sm:hidden w-36" />}
+        <div
+          className={cn(
+            pathname === "/" ? "text-center max-sm:text-left" : "text-left"
+          )}
+        >
           <Link href="/">
-            <h1 className="text-2xl font-semibold uppercase">Ronnie Garcia</h1>
+            <Heading className="uppercase" size="h1" asChild>
+              <h1>{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
+            </Heading>
           </Link>
           <p className="italic text-sm">
-            Fullstack JavaScript developer and Elixir enthusiast from Brazil
+            {process.env.NEXT_PUBLIC_SITE_DESCRIPTION}
           </p>
         </div>
-        {pathname !== "/" && (
-          <Link
-            href="/"
-            className="w-8 h-8 hover:w-[5.25rem] hover:bg-primary/90 overflow-x-hidden flex items-center justify-start rounded-full bg-primary text-primary-foreground ml-auto shadow-lg transition-all duration-300 ease-in-out"
-          >
-            <div className="min-w-8 h-8 flex items-center justify-center">
-              <Undo2 className="w-4 h-4" />
-            </div>
-            <span>Voltar</span>
-          </Link>
-        )}
-      </div>
+        <div
+          className={cn(
+            "ml-auto space-x-3 text-right",
+            pathname === "/" ? "w-36" : "w-64"
+          )}
+        >
+          <Customize />
+          <SwitchTheme />
+          {pathname !== "/" && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full"
+              asChild
+            >
+              <Link href="/">
+                <Home />
+              </Link>
+            </Button>
+          )}
+        </div>
+      </Container>
     </header>
   );
 };

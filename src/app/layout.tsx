@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+
+import { ThemeProvider } from "@/components/theme-provider";
+import AppProvider from "@/context/app.context";
+
 import "./globals.css";
 
 const geistSans = localFont({
@@ -7,6 +11,7 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -14,22 +19,30 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Ronnie Garcia | Developer",
-  description:
-    "Fullstack JavaScript developer and Elixir enthusiast from Brazil",
+  title: `${process.env.NEXT_PUBLIC_SITE_NAME} | ${process.env.NEXT_PUBLIC_SITE_SUB_TITLE}`,
+  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+type Props = Readonly<{
   children: React.ReactNode;
-}>) {
+}>;
+
+export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-accent`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AppProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </AppProvider>
       </body>
     </html>
   );

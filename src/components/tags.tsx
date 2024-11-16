@@ -1,6 +1,10 @@
 import Link from "next/link";
 
+import { Badge } from "./ui/badge";
+import { Card, CardContent } from "./ui/card";
+
 import { stringToArray } from "@/lib/utils";
+import { For } from "./render/for";
 
 type Props = {
   tags: string;
@@ -8,13 +12,24 @@ type Props = {
 
 export function Tags({ tags }: Props) {
   return (
-    <div className="text-center bg-background rounded-lg border mt-10 py-3">
-      <strong>Tags:</strong>
-      {stringToArray(tags).map((tag) => (
-        <span key={tag} className="ml-3">
-          <Link href={`/tags/${tag}`}>#{tag}</Link>
-        </span>
-      ))}
-    </div>
+    <Card className="text-center rounded-lg">
+      <CardContent className="flex flex-col p-3 space-y-3">
+        <strong>tags</strong>
+        <div className="flex flex-wrap justify-center gap-3">
+          <For each={stringToArray(tags)}>
+            {(tag) => (
+              <Link href={`/tags/${tag}`} key={tag}>
+                <Badge
+                  variant="secondary"
+                  className="hover:bg-primary hover:text-primary-foreground animate-all"
+                >
+                  #{tag}
+                </Badge>
+              </Link>
+            )}
+          </For>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
