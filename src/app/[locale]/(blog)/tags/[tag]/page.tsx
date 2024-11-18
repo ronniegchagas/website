@@ -1,22 +1,30 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-
 import { Container } from "@/components/layout/container";
 import { ListPosts } from "@/components/list-posts";
+import { Show } from "@/components/render/show";
 import { Heading } from "@/components/ui/typography";
 import { getAllPosts, getAllPostsByTag } from "@/lib/api";
 import { stringToArray } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
 
 export default async function Tags(props: Params) {
   const params = await props.params;
   const allPosts = getAllPostsByTag(params.tag);
+
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "Tag",
+  });
+
+  const NotFound = () => <p>{t("no-post-found")}</p>;
 
   return (
     <Container css="container mx-auto space-y-3 p-3">
       <Heading size="h2" variant="border" asChild>
         <h2>Tag: #{params.tag}</h2>
       </Heading>
-      <ListPosts posts={allPosts} />
+      <Show when={allPosts.length > 0} fallback={<NotFound />}>
+        <ListPosts posts={allPosts} />
+      </Show>
     </Container>
   );
 }
@@ -24,31 +32,9 @@ export default async function Tags(props: Params) {
 type Params = {
   params: Promise<{
     tag: string;
+    locale: string;
   }>;
 };
-
-export async function generateMetadata(props: Params): Promise<Metadata> {
-  const params = await props.params;
-  const posts = getAllPostsByTag(params.tag);
-
-  if (!params) {
-    return notFound();
-  }
-
-  const title = `Tags: ${params.tag} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
-  const description = `Posts tagged with ${params.tag}`;
-
-  return {
-    title,
-    description,
-    keywords: posts.map((post) => post.tags).join(","),
-    authors: posts.map((post) => post.author),
-    openGraph: {
-      title,
-      // images: [post.ogImage.url],
-    },
-  };
-}
 
 export async function generateStaticParams() {
   const posts = getAllPosts();

@@ -1,0 +1,24 @@
+{
+    "Index": {
+        "title": "Ronnie Garcia | Software Developer",
+        "description": "Fullstack JavaScript developer and Elixir enthusiast from Brazil"
+    },
+    "Post": {
+        "title": "{title} | Ronnie Garcia"
+    },
+    "Category": {
+        "title": "Category: {category} | Ronnie Garcia",
+        "description": "Posts in the category {category}",
+        "no-post-found": "No posts found in this category."
+    },
+    "Tag": {
+        "title": "Tags: {tag} | Ronnie Garcia",
+        "description": "Posts tagged with {tag}",
+        "no-post-found": "No posts found with this tag."
+    },
+    "404": {
+        "title": "404 - Page Not Found | Ronnie Garcia",
+        "description": "Opps. This page could not be found.",
+        "go-home": "Go to Home"
+    }
+}

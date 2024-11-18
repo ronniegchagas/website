@@ -1,17 +1,21 @@
-import { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { PostBody } from "@/components/post-body";
 import { Tags } from "@/components/tags";
 import { Heading } from "@/components/ui/typography";
+import { routing } from "@/i18n/routing";
 import { getAllPosts, getPostBySlug } from "@/lib/api";
 import { markdownToHtml } from "@/lib/markdownToHtml";
 import { formatDate } from "@/lib/utils";
 
-export default async function Post(props: Params) {
-  const params = await props.params;
-  const post = getPostBySlug(params.slug);
+export default async function Post({ params }: Params) {
+  const { slug, locale } = await params;
+  // Enable static rendering
+  setRequestLocale(locale);
+
+  const post = getPostBySlug(slug);
 
   if (!post) {
     return notFound();
@@ -38,35 +42,16 @@ export default async function Post(props: Params) {
 type Params = {
   params: Promise<{
     slug: string;
+    locale: string;
   }>;
 };
-
-export async function generateMetadata(props: Params): Promise<Metadata> {
-  const params = await props.params;
-  const post = getPostBySlug(params.slug);
-
-  if (!post) {
-    return notFound();
-  }
-
-  const title = `${post.title} | ${process.env.NEXT_PUBLIC_SITE_NAME}`;
-
-  return {
-    title,
-    description: post.excerpt,
-    keywords: post.tags,
-    authors: post.author,
-    openGraph: {
-      title,
-      // images: [post.ogImage.url],
-    },
-  };
-}
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  return posts
+    .map((post) => {
+      return routing.locales.map((locale) => ({ locale, slug: post.slug }));
+    })
+    .flat();
 }

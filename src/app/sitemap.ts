@@ -1,28 +1,43 @@
-import { getAllCategories, getAllPosts, getAllTags } from "@/lib/api";
 import { MetadataRoute } from "next";
+
+import { Locale, getPathname, routing } from "@/i18n/routing";
+import { getAllCategories, getAllPosts, getAllTags } from "@/lib/api";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
   const categories = getAllCategories();
   const tags = getAllTags();
 
-  const postsEntries = posts.map((post) => getEntry("/post", post.slug));
-  const tagsEntries = tags.map((tag) => getEntry("/tags", tag));
+  const postsEntries = posts.map((post) =>
+    getEntry({ pathname: `/post/[slug]`, params: { slug: post.slug } })
+  );
+  const tagsEntries = tags.map((tag) =>
+    getEntry({ pathname: `/tags/[tag]`, params: { tag } })
+  );
   const categoriesEntries = categories.map((category) =>
-    getEntry("/categories", category)
+    getEntry({
+      pathname: `/categories/[category]`,
+      params: { category },
+    })
   );
 
-  return [...postsEntries, ...categoriesEntries, ...tagsEntries];
+  return [getEntry("/"), ...postsEntries, ...categoriesEntries, ...tagsEntries];
 }
 
-function getEntry(page: string, folder?: string) {
+type Href = Parameters<typeof getPathname>[0]["href"];
+
+function getEntry(href: Href) {
   return {
-    url: getUrl(page, folder),
+    url: getUrl(href, routing.defaultLocale),
+    alternates: {
+      languages: Object.fromEntries(
+        routing.locales.map((locale) => [locale, getUrl(href, locale)])
+      ),
+    },
   };
 }
 
-function getUrl(page: string, folder?: string) {
-  const middle = folder ? `/${folder}` : "";
-
-  return `${process.env.NEXT_PUBLIC_SITE_URL}/${middle}${page}`;
+function getUrl(href: Href, locale: Locale) {
+  const pathname = getPathname({ locale, href });
+  return `${process.env.SITE_URL}/${locale}${pathname === "/" ? "" : pathname}`;
 }

@@ -1,5 +1,7 @@
+"use client";
+
 import { Paintbrush } from "lucide-react";
-import * as React from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +14,12 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useApp } from "@/context/app.context";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { useAppStore } from "@/store/app";
 
 export function Customize() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -45,16 +47,17 @@ export function Customize() {
 }
 
 function CustomizeForm({ className }: React.ComponentProps<"form">) {
-  const { sizes, changeFont, changeScreen } = useApp();
+  const appStore = useAppStore((state) => state);
+
   return (
     <form className={cn("grid items-start gap-4", className)}>
       <ToggleGroup
         type="single"
         size="sm"
         variant="outline"
-        value={sizes.screen}
+        value={appStore.state.screenWidth}
         onValueChange={(value: "md" | "lg" | "xl") => {
-          if (value) changeScreen(value);
+          if (value) appStore.dispatch.changeScreen(value);
         }}
       >
         <div className="ml-3">Screen size:</div>
@@ -72,9 +75,9 @@ function CustomizeForm({ className }: React.ComponentProps<"form">) {
         type="single"
         size="sm"
         variant="outline"
-        value={sizes.font}
+        value={appStore.state.fontSize}
         onValueChange={(value: "sm" | "normal" | "lg") => {
-          if (value) changeFont(value);
+          if (value) appStore.dispatch.changeFont(value);
         }}
       >
         <div className="ml-3">Font size:</div>
